@@ -46,6 +46,98 @@ const FnBoard = (props) => {
   );
 };
 
+const FnGame = () => {
+  const [history, setHistory] = useState([
+    {
+      squares: Array(9).fill(null),
+    },
+  ]);
+  const [xIsNext, setXIsNext] = useState(true);
+  const [stepNumber, setStepNumber] = useState(0);
+  const [isAsc, setIsAsc] = useState(true);
+
+  const handleClick = (i) => {
+    const history = history.slice(0, stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = xIsNext ? "X" : "O";
+    this.setState({
+      history: history.concat([
+        {
+          squares: squares,
+          col: (i % 3) + 1,
+          row: Math.floor(i / 3) + 1,
+        },
+      ]),
+      stepNumber: history.length,
+      xIsNext: !xIsNext,
+    });
+  };
+  const jumpTo = (step) => {
+    stepNumber(step);
+    xIsNext(step % 2 === 0);
+    // setState({
+    //   stepNumber: step,
+    //   xIsNext: step % 2 === 0,
+    // });
+  };
+  const toggleAsc = () => {
+    setIsAsc(!isAsc);
+  };
+
+  const current = history[stepNumber];
+  const settlement = calculateWinner(current.squares);
+
+  let status;
+  if (settlement) {
+    if (settlement.isDraw) {
+      status = "Draw";
+    } else {
+      status = "Winner: " + settlement.winner;
+    }
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
+  }
+
+  const moves = history.map((step, move) => {
+    const desc = move
+      ? "Move #" + move + "(" + step.col + "," + step.row + ")"
+      : "Game start";
+    return (
+      <li key={move}>
+        <button
+          onClick={() => jumpTo(move)}
+          className={stepNumber === move ? "bold" : ""}
+        >
+          {desc}
+        </button>
+      </li>
+    );
+  });
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <FnBoard
+          squares={current.squares}
+          onClick={(i) => handleClick(i)}
+          highlightCells={settlement ? settlement.line : []}
+        />
+      </div>
+      <div className="game-info">
+        <div>{status}</div>
+        <div>
+          <button onClick={() => toggleAsc()}>ASC⇔DESC</button>
+        </div>
+        <ol>{isAsc ? moves : moves.reverse()}</ol>
+      </div>
+    </div>
+  );
+};
+
 class Game extends React.Component {
   constructor(props) {
     super();
@@ -147,7 +239,7 @@ class Game extends React.Component {
   }
 }
 // ========================================
-ReactDOM.render(<Game />, document.getElementById("root"));
+ReactDOM.render(<FnGame />, document.getElementById("root"));
 
 function calculateWinner(squares) {
   const lines = [
