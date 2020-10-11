@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
@@ -13,41 +13,39 @@ function Square(props) {
   );
   //良くわからない：className={`square ${props.isHighlight ? "highlight" : ""}`}//
 }
-class Board extends React.Component {
-  renderSquare(i, isHighlight = false) {
+
+const FnBoard = (props) => {
+  const renderSquare = (i, isHighlight = false) => {
     return (
       <Square
         isHighlight={isHighlight}
         key={i}
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
+        value={props.squares[i]}
+        onClick={() => props.onClick(i)}
       />
     );
-  }
-  render() {
-    return (
-      <div>
-        {Array(3)
-          .fill(0)
-          .map((row, i) => {
-            return (
-              <div className="board-row" key={i}>
-                {Array(3)
-                  .fill(0)
-                  .map((col, j) => {
-                    return this.renderSquare(
-                      i * 3 + j,
-                      this.props.highlightCells.indexOf(i * 3 + j) !== -1
-                    );
-                  })}
-              </div>
-            );
-          })}
+  };
+  return (
+    <div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </div>
-    );
-  }
-  //良くわからない：renderの中身全般(row,col以外)//
-}
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  );
+};
+
 class Game extends React.Component {
   constructor(props) {
     super();
@@ -130,7 +128,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board
+          <FnBoard
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
             highlightCells={settlement ? settlement.line : []}
