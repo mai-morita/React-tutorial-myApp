@@ -57,8 +57,8 @@ const Game = () => {
   const [isAsc, setIsAsc] = useState(true);
 
   const handleClick = (i) => {
-    const historyClick = history.slice(0, stepNumber + 1);
-    const current = history[history.length - 1];
+    const tmpHistory = history.slice(0, stepNumber + 1);
+    const current = tmpHistory[tmpHistory.length - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
@@ -70,13 +70,13 @@ const Game = () => {
         { squares, col: (i % 3) + 1, row: Math.floor(i / 3) + 1 },
       ])
     );
-    setStepNumber(history.length);
+    setStepNumber(tmpHistory.length);
     setXIsNext(!xIsNext);
   };
 
   const jumpTo = (step) => {
-    stepNumber(step);
-    xIsNext(step % 2 === 0);
+    setStepNumber(step);
+    setXIsNext(step % 2 === 0);
   };
   const toggleAsc = () => {
     setIsAsc(!isAsc);
